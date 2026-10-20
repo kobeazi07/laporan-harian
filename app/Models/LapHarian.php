@@ -22,9 +22,9 @@ class LapHarian extends Model
         'nomor',
         'tanggal',
         'approved_by',
-        'konsultan_pengawas_id',
-        'owner_id',
-        'kontraktor_pelaksana_id',
+        // 'konsultan_pengawas_id',
+        // 'owner_id',
+        // 'kontraktor_pelaksana_id',
         'sisa_waktu',
     ];
 
@@ -46,20 +46,20 @@ class LapHarian extends Model
         return $this->belongsTo(User::class, 'approved_by');
     }
 
-    public function konsultanPengawas(): BelongsTo
-    {
-        return $this->belongsTo(KonsultanPengawas::class, 'konsultan_pengawas_id');
-    }
+    // public function konsultanPengawas(): BelongsTo
+    // {
+    //     return $this->belongsTo(KonsultanPengawas::class, 'konsultan_pengawas_id');
+    // }
 
-    public function owner(): BelongsTo
-    {
-        return $this->belongsTo(Owner::class, 'owner_id');
-    }
+    // public function owner(): BelongsTo
+    // {
+    //     return $this->belongsTo(Owner::class, 'owner_id');
+    // }
 
-    public function kontraktorPelaksana(): BelongsTo
-    {
-        return $this->belongsTo(KontraktorPelaksana::class, 'kontraktor_pelaksana_id');
-    }
+    // public function kontraktorPelaksana(): BelongsTo
+    // {
+    //     return $this->belongsTo(KontraktorPelaksana::class, 'kontraktor_pelaksana_id');
+    // }
 
     public function keteranganOptional(): HasMany
     {
