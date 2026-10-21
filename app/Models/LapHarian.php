@@ -21,11 +21,13 @@ class LapHarian extends Model
         'created_by',
         'nomor',
         'tanggal',
+        'project_id',
         'approved_by',
         // 'konsultan_pengawas_id',
         // 'owner_id',
         // 'kontraktor_pelaksana_id',
         'sisa_waktu',
+        'status',
     ];
 
     protected function casts(): array
@@ -89,5 +91,13 @@ class LapHarian extends Model
     public function dokumentasi(): HasMany
     {
         return $this->hasMany(Dokumentasi::class, 'lap_harian_id');
+    }
+    public function sow_inputs(): HasMany
+    {
+        return $this->hasMany(SowInput::class, 'lap_harian_id');
+    }
+    public function twork_inputs(): HasMany
+    {
+        return $this->hasMany(TworkInput::class, 'lap_harian_id');
     }
 }

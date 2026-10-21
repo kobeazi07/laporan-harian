@@ -18,16 +18,12 @@ return new class extends Migration
                 ->constrained('lap_harian')
                 ->cascadeOnDelete();
 
-            $table->foreignId('tenaga_kerja_id')
-                ->constrained('tenaga_kerja');
-
-            $table->integer('jumlah');
+            $table->longText('remark');
 
             $table->timestamps();
 
             $table->unique([
                 'lap_harian_id',
-                'tenaga_kerja_id',
             ]);
         });
     }

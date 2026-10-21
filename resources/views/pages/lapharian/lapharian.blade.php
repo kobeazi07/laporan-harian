@@ -13,7 +13,7 @@
                          <h6 class="m-0 font-weight-bold text-primary">Data lapharian</h6>
                      </div>
                      <div class="col-lg-6 col-6">
-                         <a href="{{ route('HalamanTambahlapharian') }}" class="btn btn-primary float-end">
+                         <a href="{{ route('HalamanTambahlapharian', $project->id) }}" class="btn btn-primary float-end">
                              Tambah +
                          </a>
                      </div>
@@ -50,7 +50,8 @@
                                      <td>{{ $lapharian->tanggal }}</td>
                                      <td>
                                          <div class="d-flex align-items-center gap-2">
-                                             <a href="" type="button" class="btn btn-primary">
+                                             <a href="{{ route('haledit_lapharian', $lapharian->id) }}" type="button"
+                                                 class="btn btn-warning">
                                                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
                                                      fill="currentColor" class="bi bi-pencil-fill" viewBox="0 0 16 16">
                                                      <path

@@ -10,25 +10,28 @@
                         <div class="card">
                             <div class="card-body">
                                 <form class="formlapharian" id="formlapharian">
+                                    @csrf
                                     <div class="row">
                                         <div class="col-md-3">
                                             <div class="mb-3">
-                                                <label for="exampleInputEmail1" class="form-label">Nomor</label>
-                                                <input type="text" class="form-control">
+                                                <label for="" class="form-label">Nomor</label>
+                                                <input type="text" name="nomor" id="nomor" class="form-control">
+                                                <input type="hidden" name="project_id" value="{{ $project_id }}"
+                                                    id="nomor" class="form-control">
                                             </div>
 
 
                                         </div>
                                         <div class="col-md-3">
                                             <div class="mb-3">
-                                                <label for="exampleInputEmail1" class="form-label">Tanggal</label>
-                                                <input type="date" class="form-control" id="date" name="date">
+                                                <label for="" class="form-label">Tanggal</label>
+                                                <input type="date" class="form-control" id="date" name="tanggal">
                                             </div>
                                         </div>
                                         <div class="col-md-2">
                                             <div class="mb-3">
-                                                <label for="exampleInputEmail1" class="form-label">Sisa Waktu</label>
-                                                <input type="number" class="form-control">
+                                                <label for="" class="form-label">Sisa Waktu</label>
+                                                <input type="number" name="sisa_waktu" class="form-control">
                                             </div>
                                         </div>
                                         <div class="col-md-4">
@@ -129,7 +132,7 @@
                                                 </div>
                                             </div>
                                             <div class="mb-3">
-                                                <label for="exampleInputEmail1" class="form-label">Pagi</label>
+                                                <label for="" class="form-label">Pagi</label>
                                                 <select id="cuaca_pagi" name="cuaca_pagi"
                                                     class="form-select select2-pagi" required>
                                                     <option value=""></option>
@@ -139,7 +142,7 @@
                                                 </select>
                                             </div>
                                             <div class="mb-3">
-                                                <label for="exampleInputEmail1" class="form-label">Siang</label>
+                                                <label for="" class="form-label">Siang</label>
                                                 <select id="cuaca_siang" name="cuaca_siang"
                                                     class="form-select select2-siang" required>
                                                     <option value=""></option>
@@ -149,7 +152,7 @@
                                                 </select>
                                             </div>
                                             <div class="mb-3">
-                                                <label for="exampleInputEmail1" class="form-label">Sore</label>
+                                                <label for="" class="form-label">Sore</label>
                                                 <select id="cuaca_sore" name="cuaca_sore"
                                                     class="form-select select2-sore" required>
                                                     <option value=""></option>
@@ -159,7 +162,7 @@
                                                 </select>
                                             </div>
                                             <div class="mb-3">
-                                                <label for="exampleInputEmail1" class="form-label">Malam</label>
+                                                <label for="" class="form-label">Malam</label>
                                                 <select id="cuaca_malam" name="cuaca_malam"
                                                     class="form-select select2-malam" required>
                                                     <option value=""></option>
@@ -170,8 +173,27 @@
                                             </div>
                                         </div>
                                     </div>
+                                    <div class="row">
+                                        <div class="col-lg-6">
+                                            <div class="mb-3">
+                                                <label class="form-label">Keterangan</label>
+
+                                                <div id="keta-editor"></div>
+                                                <input type="hidden" name="keta" id="keta">
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-6">
+                                            <div class="mb-3">
+                                                <label class="form-label">Instruksi / Catatan</label>
+
+                                                <div id="ic-editor"></div>
+                                                <input type="hidden" name="ic" id="ic">
+                                            </div>
+                                        </div>
+                                    </div>
                                     <div class="row mt-5 justify-content-end">
-                                        <button type="submit" class="btn btn-primary w-50">Submit</button>
+                                        <button type="submit" class="btn btn-primary w-50"
+                                            id="btnSavelapharian">Submit</button>
                                     </div>
 
                                 </form>
@@ -272,7 +294,7 @@
             const html = `
             <div class="d-flex align-items-start gap-2 mb-3 input-group" id="kp-${uniqueId}">
                 <div class="flex-grow-1">
-                    <select name="scope_work_id[]"
+                    <select name="sow_id[]"
                             class="form-select select2-scope"
                             required>
                         ${options}
@@ -479,7 +501,7 @@
                 <!-- Kolom Unit -->
                 <div style="flex: 1; min-width: 0;">
                     <label class="form-label">Unit</label>
-                    <select name="unit_id[]"
+                    <select name="unit_id_alat[]"
                             class="form-select select2-type"
                             required>
                         ${optionsu}
@@ -575,7 +597,7 @@
                 <!-- Kolom Unit -->
                 <div style="flex: 1; min-width: 0;">
                     <label class="form-label">Unit</label>
-                    <select name="unit_id[]"
+                    <select name="unit_id_material[]"
                             class="form-select select2-type"
                             required>
                         ${optionsu}
@@ -586,7 +608,7 @@
                 <div style="flex: 1; min-width: 0;">
                     <label class="form-label">Jumlah</label>
                     <input type="number"
-                        name="jumlah_alat[]"
+                        name="jumlah_material[]"
                         class="form-control"
                         placeholder="Jumlah"
                         min="1"
@@ -642,13 +664,12 @@
                 <!-- Kolom Alat -->
                 <div style="flex: 2; min-width: 0;">
                     
-                        <textarea name="material[]"
+                        <textarea name="remarko[]"
                         class="form-control"
                         rows="3"
-                        placeholder="Masukkan keterangan material..."
+                        placeholder="Masukkan keterangan ..."
                         required></textarea>
                 </div>
-
 
                 <!-- Tombol Hapus -->
                 <div class="flex-shrink-0">
@@ -717,6 +738,202 @@
                 placeholder: 'Pilih atau cari data...',
                 allowClear: true,
                 minimumResultsForSearch: 0
+            });
+        });
+
+        // ckeditor
+        // document.addEventListener("DOMContentLoaded", function() {
+        //     CKEDITOR.replace('keta');
+        // });
+        // document.addEventListener("DOMContentLoaded", function() {
+        //     CKEDITOR.replace('ic');
+        // });
+        // akhir ckeditor
+
+
+        // ajax
+        document.addEventListener('change', function(e) {
+            if (e.target.classList.contains('custom-file-input')) {
+                e.target.nextElementSibling.innerText = e.target.files[0].name;
+            }
+        });
+        // $('#btnSavelapharian').on('click', function() {
+        //     e.preventDefault();
+        //     let form = document.getElementById('formlapharian');
+
+        //     if (!form.checkValidity()) {
+        //         form.reportValidity();
+        //         return;
+        //     }
+        //     let formData = new FormData(form);
+        //     $.ajax({
+        //         url: "{{ route('Tambah_lapharian') }}",
+        //         type: "POST",
+        //         data: formData,
+        //         processData: false,
+        //         contentType: false,
+
+        //         beforeSend: function() {
+        //             $('#btnSaveproject')
+        //                 .prop('disabled', true)
+        //                 .text('Menyimpan...');
+        //         },
+
+        //         success: function(res) {
+        //             Swal.fire({
+        //                 icon: 'success',
+        //                 title: 'Berhasil',
+        //                 text: 'project berhasil ditambahkan',
+        //                 timer: 2000,
+        //                 showConfirmButton: false
+        //             }).then(() => {
+        //                 location.reload();
+        //             });
+        //         },
+
+        //         error: function(xhr) {
+        //             let pesan = 'Terjadi kesalahan';
+
+        //             if (xhr.status === 422) {
+        //                 let errors = xhr.responseJSON.errors;
+        //                 pesan = '';
+        //                 for (let key in errors) {
+        //                     pesan += `• ${errors[key][0]}<br>`;
+        //                 }
+        //             }
+
+        //             Swal.fire({
+        //                 icon: 'error',
+        //                 title: 'Gagal',
+        //                 html: pesan
+        //             });
+        //         },
+
+        //         complete: function() {
+        //             $('#btnSaveproject')
+        //                 .prop('disabled', false)
+        //                 .text('Simpanproject');
+        //         }
+        //     });
+        // });
+        // quil editor
+        const quillKeterangan = new Quill('#keta-editor', {
+            theme: 'snow',
+            placeholder: 'Masukkan keterangan...',
+            modules: {
+                toolbar: [
+                    ['bold', 'italic', 'underline'],
+                    [{
+                        list: 'ordered'
+                    }, {
+                        list: 'bullet'
+                    }],
+                    [{
+                        align: []
+                    }],
+                    ['link', 'clean']
+                ]
+            }
+        });
+
+        const quillInstruksi = new Quill('#ic-editor', {
+            theme: 'snow',
+            placeholder: 'Masukkan instruksi atau catatan...',
+            modules: {
+                toolbar: [
+                    ['bold', 'italic', 'underline'],
+                    [{
+                        list: 'ordered'
+                    }, {
+                        list: 'bullet'
+                    }],
+                    [{
+                        align: []
+                    }],
+                    ['link', 'clean']
+                ]
+            }
+        });
+        // akhir quil editor
+
+        $('#btnSavelapharian').on('click', function(e) {
+            e.preventDefault();
+
+            let form = document.getElementById('formlapharian');
+
+            if (!form.checkValidity()) {
+                form.reportValidity();
+                return;
+            }
+
+            let formData = new FormData(form);
+            // let keta = 'keta';
+            // let ic = 'ic';
+            formData.set('keta', quillKeterangan.root.innerHTML);
+            formData.set('ic', quillInstruksi.root.innerHTML);
+
+
+            $.ajax({
+                url: "{{ route('Tambah_lapharian') }}",
+                type: "POST",
+                data: formData,
+                processData: false,
+                contentType: false,
+
+                beforeSend: function() {
+                    $('#btnSavelapharian')
+                        .prop('disabled', true)
+                        .text('Menyimpan...');
+                },
+
+                success: function(res) {
+                    console.log(res);
+
+                    if (res.status == 1) {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Berhasil',
+                            text: res.message,
+                            timer: 2000,
+                            showConfirmButton: false
+                        }).then(() => {
+                            window.location.href = res.redirect;
+                        });
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Gagal',
+                            text: res.message || 'Gagal menyimpan laporan harian'
+                        });
+                    }
+                },
+
+                error: function(xhr) {
+                    let pesan = 'Terjadi kesalahan saat menyimpan data';
+
+                    if (xhr.status === 422 && xhr.responseJSON?.errors) {
+                        let errors = xhr.responseJSON.errors;
+                        pesan = '';
+
+                        for (let key in errors) {
+                            pesan += `• ${errors[key][0]}<br>`;
+                        }
+                    } else if (xhr.responseJSON?.message) {
+                        pesan = xhr.responseJSON.message;
+                    }
+
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Gagal',
+                        html: pesan
+                    });
+                },
+
+                complete: function() {
+                    $('#btnSavelapharian')
+                        .prop('disabled', false)
+                        .text('Simpan Laporan');
+                }
             });
         });
     </script>

@@ -207,7 +207,15 @@
 /* ========================================
    SELECT2 - TAMBAH DAN EDIT
 ======================================== */
+#keta-editor,
+#ic-editor {
+    background-color: #fff;
+}
 
+#keta-editor .ql-editor,
+#ic-editor .ql-editor {
+    min-height: 150px;
+}
 /* Lebar select */
 .select2-container {
     width: 100% !important;
