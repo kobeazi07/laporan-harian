@@ -27,4 +27,7 @@ Route::delete(
     [DashboardController::class, 'hapus_foto']
 )->name('dokumentasi.destroy');
 Route::post('/tambah_lapharian', [DashboardController::class, 'tambah_lapharian'])->name('Tambah_lapharian');
-Route::delete('/lapharian/{lapharian}', [DashboardController::class, 'lapharian_destroy'])->name('lapharian.destroy');
+Route::delete(
+    '/lapharian/{lapharian}',
+    [DashboardController::class, 'lapharian_destroy']
+)->name('lapharian.destroy');

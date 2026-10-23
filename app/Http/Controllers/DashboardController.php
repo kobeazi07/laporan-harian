@@ -382,4 +382,53 @@ class DashboardController extends Controller
             ], 500);
         }
     }
+
+    public function lapharian_destroy(LapHarian $lapharian)
+    {
+        try {
+            DB::transaction(function () use ($lapharian) {
+
+                // Pastikan record utama ditemukan
+                if (!$lapharian->exists) {
+                    throw new \RuntimeException('Data laporan harian tidak ditemukan.');
+                }
+
+                // Hapus data relasi
+                $lapharian->keteranganOptional()->delete();
+                $lapharian->tenagaKerjaInputs()->delete();
+                $lapharian->alatInputs()->delete();
+                $lapharian->materialInputs()->delete();
+                $lapharian->cuaca()->delete();
+                $lapharian->sow_inputs()->delete();
+                $lapharian->twork_inputs()->delete();
+
+                // Hapus marker dan dokumentasi
+                $lapharian->dokumentasi()->get()->each(function ($item) {
+                    $item->delete();
+                });
+
+                // Hapus data utama
+                $deleted = $lapharian->delete();
+
+                if (!$deleted) {
+                    throw new \RuntimeException(
+                        'Data laporan harian gagal dihapus.'
+                    );
+                }
+            });
+
+            return response()->json([
+                'status' => 1,
+                'message' => 'Data laporan harian berhasil dihapus.'
+            ]);
+        } catch (\Throwable $e) {
+            report($e);
+
+            return response()->json([
+                'status' => 0,
+                'message' => 'Gagal menghapus data laporan harian.',
+                'error' => config('app.debug') ? $e->getMessage() : null
+            ], 500);
+        }
+    }
 }
