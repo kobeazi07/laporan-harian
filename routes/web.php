@@ -31,3 +31,8 @@ Route::delete(
     '/lapharian/{lapharian}',
     [DashboardController::class, 'lapharian_destroy']
 )->name('lapharian.destroy');
+
+Route::get('/laporan-harian/pdf', [
+    DashboardController::class,
+    'cetak_pdf'
+])->name('laporan-harian.pdf');

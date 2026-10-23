@@ -30,6 +30,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Intervention\Image\Format;
+use Barryvdh\DomPDF\Facade\Pdf;
 // use SebastianBergmann\CodeCoverage\Report\Xml\Project;
 
 
@@ -430,5 +431,12 @@ class DashboardController extends Controller
                 'error' => config('app.debug') ? $e->getMessage() : null
             ], 500);
         }
+    }
+    public function cetak_pdf()
+    {
+        $pdf = Pdf::loadView('pdf.laporan-harian-statis')
+            ->setPaper('a4', 'landscape');
+
+        return $pdf->stream('laporan-harian.pdf');
     }
 }
