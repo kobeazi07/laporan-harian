@@ -207,6 +207,183 @@
 /* ========================================
    SELECT2 - TAMBAH DAN EDIT
 ======================================== */
+/* Gambar galeri */
+.lightbox-link {
+    display: block;
+    cursor: zoom-in;
+}
+
+.rounded-image {
+    object-fit: cover;
+    border-radius: 10px;
+}
+
+/* Area lightbox */
+#lightbox {
+    z-index: 99999 !important;
+}
+
+#lightboxOverlay {
+    z-index: 99998 !important;
+}
+
+/* Tombol close */
+#lightbox .lb-close {
+    position: fixed !important;
+    top: 15px;
+    right: 15px;
+    width: 44px;
+    height: 44px;
+    background-color: rgba(0, 0, 0, 0.75);
+    background-position: center;
+    background-size: 18px;
+    border-radius: 50%;
+    opacity: 1;
+    z-index: 100000;
+}
+
+/* Tombol navigasi */
+#lightbox .lb-prev,
+#lightbox .lb-next {
+    opacity: 1;
+    background-size: 28px;
+}
+
+/* Gambar tidak melebihi layar */
+#lightbox .lb-image {
+    max-width: calc(100vw - 24px);
+    max-height: calc(100dvh - 120px);
+    height: auto;
+    width: auto;
+    object-fit: contain;
+    border-radius: 6px;
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+    #lightbox .lb-container {
+        padding: 0;
+    }
+
+    #lightbox .lb-outerContainer {
+        max-width: calc(100vw - 16px);
+        max-height: calc(100dvh - 90px);
+    }
+
+    #lightbox .lb-image {
+        max-width: calc(100vw - 24px);
+        max-height: calc(100dvh - 110px);
+    }
+
+    #lightbox .lb-close {
+        top: 10px;
+        right: 10px;
+        width: 46px;
+        height: 46px;
+    }
+
+    #lightbox .lb-prev,
+    #lightbox .lb-next {
+        width: 40px;
+        background-size: 24px;
+    }
+
+    #lightbox .lb-data .lb-caption {
+        font-size: 13px;
+        line-height: 1.5;
+    }
+}
+.blog-img {
+    position: relative;
+}
+
+/* Kartu foto */
+.foto-card {
+    height: 100%;
+}
+
+.blog-img {
+    position: relative;
+    overflow: hidden;
+    border-radius: 12px;
+    background: #f1f1f1;
+}
+
+/* Area klik foto */
+.lightbox-link {
+    display: block;
+    line-height: 0;
+}
+
+/* Ukuran gambar konsisten */
+.rounded-image {
+    display: block;
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    object-fit: cover;
+    border-radius: 12px;
+    transition: transform 0.2s ease;
+}
+
+@media (hover: hover) {
+    .lightbox-link:hover .rounded-image {
+        transform: scale(1.03);
+    }
+}
+
+/* Form hapus di pojok kanan atas */
+.form-delete-foto {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    z-index: 5;
+    margin: 0;
+}
+
+/* Tombol ikon hapus */
+.btn-submit-delete {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 42px;
+    height: 42px;
+    padding: 0;
+    border: 0;
+    border-radius: 50%;
+    color: #fff;
+    background: rgba(220, 53, 69, 0.95);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+}
+
+.btn-submit-delete:active {
+    transform: scale(0.94);
+}
+
+.btn-submit-delete:focus-visible {
+    outline: 3px solid #fff;
+    outline-offset: 2px;
+}
+
+/* Penyesuaian layar kecil */
+@media (max-width: 576px) {
+    .form-delete-foto {
+        top: 6px;
+        right: 6px;
+    }
+
+    .btn-submit-delete {
+        width: 38px;
+        height: 38px;
+    }
+
+    .btn-submit-delete svg {
+        width: 17px;
+        height: 17px;
+    }
+}
 #keta-editor,
 #ic-editor {
     background-color: #fff;

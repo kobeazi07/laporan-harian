@@ -43,6 +43,11 @@ class LapHarian extends Model
         return $this->belongsTo(User::class, 'created_by');
     }
 
+    public function project(): BelongsTo
+    {
+        return $this->belongsTo(Project::class, 'project_id');
+    }
+
     public function penyetuju(): BelongsTo
     {
         return $this->belongsTo(User::class, 'approved_by');

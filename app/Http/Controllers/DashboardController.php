@@ -20,12 +20,15 @@ use App\Models\SowInput;
 use App\Models\TenagaKerjaInput;
 use App\Models\TworkInput;
 use App\Models\Unit;
+use App\Models\Dokumentasi;
+use Intervention\Image\ImageManager;
+use Intervention\Image\Drivers\Gd\Driver;
+use Intervention\Image\Encoders\WebpEncoder;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use Intervention\Image\ImageManager;
-use Intervention\Image\Drivers\Gd\Driver;
+use Illuminate\Support\Facades\Validator;
 use Intervention\Image\Format;
 // use SebastianBergmann\CodeCoverage\Report\Xml\Project;
 
@@ -246,6 +249,135 @@ class DashboardController extends Controller
 
             return response()->json([
                 'status' => 0,
+                'message' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+
+    // foto
+    public function halfoto_lapharian($id)
+    {
+        $lap_harian = LapHarian::findorFail($id);
+        $foto = Dokumentasi::where('lap_harian_id', $id)->get();
+        return view('pages.lapharian.foto', compact('lap_harian', 'foto'));
+    }
+
+    // upload foto
+    public function upload_foto(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'lap_harian_id' => 'required|exists:lap_harian,id',
+            'foto'          => 'required|image|mimes:jpg,jpeg,png,webp|max:10240',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => $validator->errors()->first(),
+            ], 422);
+        }
+
+        $thumbnail = $request->file('foto');
+        $thumbnailPath = null;
+
+        try {
+            // Ambil nama asli foto
+            $originalName = pathinfo(
+                $thumbnail->getClientOriginalName(),
+                PATHINFO_FILENAME
+            );
+
+            // Bersihkan nama file
+            $originalName = preg_replace(
+                '/[^A-Za-z0-9_-]/',
+                '-',
+                $originalName
+            );
+
+            // Buat nama file unik
+            $thumbnailName = uniqid() . '_foto_' . $originalName . '.webp';
+
+            // Folder penyimpanan foto dokumentasi
+            $destination = public_path('inputan/dokumentasi/');
+
+            if (!file_exists($destination)) {
+                mkdir($destination, 0755, true);
+            }
+
+            // Inisialisasi Intervention Image
+            $manager = new ImageManager(new Driver());
+
+            $image = $manager->decode($thumbnail->getPathname());
+
+            // Resize maksimal 1920 x 1920 px
+            $image->scaleDown(
+                width: 1920,
+                height: 1920
+            );
+
+            // Konversi ke WebP kualitas 80
+            $encoded = $image->encode(
+                new WebpEncoder(quality: 80)
+            );
+
+            // Simpan gambar
+            $encoded->save($destination . $thumbnailName);
+
+            // Path relatif yang disimpan ke database
+            $thumbnailPath = 'inputan/dokumentasi/' . $thumbnailName;
+
+            // Simpan data dokumentasi
+            $dokumentasi = Dokumentasi::create([
+                'lap_harian_id' => $request->lap_harian_id,
+                'foto'          => $thumbnailPath,
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Foto dokumentasi berhasil diunggah.',
+                'data' => [
+                    'id'            => $dokumentasi->id,
+                    'lap_harian_id' => $dokumentasi->lap_harian_id,
+                    'foto'          => $dokumentasi->foto,
+                    'url'           => asset($dokumentasi->foto),
+                ],
+            ], 201);
+        } catch (\Throwable $e) {
+            // Hapus file jika proses penyimpanan gagal
+            if ($thumbnailPath && file_exists(public_path($thumbnailPath))) {
+                unlink(public_path($thumbnailPath));
+            }
+
+            report($e);
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Gagal memproses atau menyimpan foto dokumentasi.',
+            ], 500);
+        }
+    }
+
+    public function hapus_foto(Dokumentasi $dokumentasi)
+    {
+        DB::beginTransaction();
+
+        try {
+            // hapus data
+            $dokumentasi->delete();
+
+            DB::commit();
+
+            return response()->json([
+                'status'  => 1,
+                'message' => 'Data dokumentasi berhasil dihapus'
+            ]);
+        } catch (\Exception $e) {
+
+            DB::rollBack();
+
+            return response()->json([
+                'status'  => 0,
                 'message' => $e->getMessage()
             ], 500);
         }

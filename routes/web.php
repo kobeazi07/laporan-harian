@@ -16,5 +16,15 @@ Route::delete('/project/{project}', [DashboardController::class, 'project_destro
 Route::get('admin_lapharian/{id}', [DashboardController::class, 'admin_lapharian'])->name('HalamanAdminlapharian');
 Route::get('haltambah_lapharian/{id}', [DashboardController::class, 'haltambah_lapharian'])->name('HalamanTambahlapharian');
 Route::get('haledit_lapharian/{id}', [DashboardController::class, 'haledit_lapharian'])->name('HalamanEditlapharian');
+
+Route::get('halfoto_lapharian/{id}', [DashboardController::class, 'halfoto_lapharian'])->name('HalamanFotolapharian');
+Route::post('/dokumentasi/upload', [
+    DashboardController::class,
+    'upload_foto'
+])->name('dokumentasi.upload');
+Route::delete(
+    '/dokumentasi/{dokumentasi}',
+    [DashboardController::class, 'hapus_foto']
+)->name('dokumentasi.destroy');
 Route::post('/tambah_lapharian', [DashboardController::class, 'tambah_lapharian'])->name('Tambah_lapharian');
 Route::delete('/lapharian/{lapharian}', [DashboardController::class, 'lapharian_destroy'])->name('lapharian.destroy');
