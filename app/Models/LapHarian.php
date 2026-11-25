@@ -27,6 +27,8 @@ class LapHarian extends Model
         // 'owner_id',
         // 'kontraktor_pelaksana_id',
         'sisa_waktu',
+        'kendala',
+        'jumlah_man_power',
         'status',
     ];
 

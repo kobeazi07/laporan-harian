@@ -177,7 +177,8 @@ class DashboardController extends Controller
                 'project_id' => $request->project_id,
                 'nomor' => $request->nomor,
                 'tanggal' => $request->tanggal,
-                'sisa_waktu' => $request->sisa_waktu,
+                'jumlah_man_power' => $request->jumlah_man_power,
+                'kendala' => $request->kendala,
                 'konsultan_pengawas_id' => $request->konsultan_pengawas_id,
                 'keterangan' => $request->input('keta'),
                 'instruksi_catatan' => $request->input('ic'),
@@ -185,27 +186,7 @@ class DashboardController extends Controller
             ]);
             $lapharian_id =  $lapharian->id;
             // sow
-            foreach ($request->sow_id as $key => $itemId) {
-                SowInput::create([
-                    'lap_harian_id' =>  $lapharian_id,
-                    'sow_id'     => $itemId
-                ]);
-            }
 
-            foreach ($request->type_work_id as $key => $itemId) {
-                TworkInput::create([
-                    'lap_harian_id' =>  $lapharian_id,
-                    'type_work_id'     => $itemId
-                ]);
-            }
-
-            foreach ($request->tenaga_kerja_id as $key => $itemId) {
-                TenagaKerjaInput::create([
-                    'lap_harian_id' =>  $lapharian_id,
-                    'tenaga_kerja_id'     => $itemId,
-                    'jumlah'     => $request->jumlah_tenaga_kerja[$key]
-                ]);
-            }
             foreach ($request->alat_id as $key => $itemId) {
                 AlatInput::create([
                     'lap_harian_id' =>  $lapharian_id,
@@ -220,12 +201,6 @@ class DashboardController extends Controller
                     'material_id'     => $itemId,
                     'unit_id'     => $request->unit_id_material[$key],
                     'jumlah'     => $request->jumlah_material[$key]
-                ]);
-            }
-            foreach ($request->remarko as $key => $itemId) {
-                KeteranganOptional::create([
-                    'lap_harian_id' =>  $lapharian_id,
-                    'remark'     => $itemId
                 ]);
             }
 
@@ -438,5 +413,12 @@ class DashboardController extends Controller
             ->setPaper('a4', 'landscape');
 
         return $pdf->stream('laporan-harian.pdf');
+    }
+
+    public function actfoto($id)
+    {
+        $lap_harian = LapHarian::with('project')->findOrFail($id);
+
+        return view('pages.lapharian.actfoto', compact('lap_harian'));
     }
 }

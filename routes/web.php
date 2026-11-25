@@ -36,3 +36,7 @@ Route::get('/laporan-harian/pdf', [
     DashboardController::class,
     'cetak_pdf'
 ])->name('laporan-harian.pdf');
+Route::get(
+    '/admin/lap_harian/actfoto/{id}',
+    [DashboardController::class, 'actfoto']
+)->name('actfoto');

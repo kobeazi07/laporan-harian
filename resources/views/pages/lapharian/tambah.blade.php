@@ -1,10 +1,10 @@
 @extends('layouts.index')
 
 @section('konten')
-    <div class="row" style="margin-top: -100px;">
+    <div class="row form-input" style="">
         <div class="body-wrapper-inner">
-            <div class="container-fluid">
-                <div class="card">
+            <div class="">
+                <div class="">
                     <div class="card-body">
                         <h5 class="card-title fw-semibold mb-4">Tambah Laporan Harian</h5>
                         <div class="card">
@@ -30,56 +30,14 @@
                                         </div>
                                         <div class="col-md-2">
                                             <div class="mb-3">
-                                                <label for="" class="form-label">Sisa Waktu</label>
-                                                <input type="number" name="sisa_waktu" class="form-control">
+                                                <label for="" class="form-label">Jumlah Pekerja</label>
+                                                <input type="number" name="jumlah_man_power" class="form-control">
                                             </div>
                                         </div>
-                                        <div class="col-md-4">
-                                            <div class="row">
-                                                <div class="col-md-6 col-12">
-                                                    <h5 class="fw-bold">Kode Pekerjaan</h5>
-                                                </div>
-                                                <div class="col-md-6 col-12">
-                                                    <button type="button" class="btn btn-primary float-end"
-                                                        onclick="addkp()">Tambah
-                                                        +</button>
-                                                </div>
-                                            </div>
-                                            <div class="row mt-3">
-                                                <div id = "kpekerjaan-container"></div>
-                                            </div>
-                                        </div>
+
                                     </div>
                                     <div class="row">
-                                        <div class="col-md-3">
-                                            <div class="row">
-                                                <div class="col-md-7 col-12">
-                                                    <h5 class="fw-bold">Tipe Pekerjaan</h5>
-                                                </div>
-                                                <div class="col-md-5 col-12">
-                                                    <button type="button" class="btn btn-primary float-end"
-                                                        onclick="addtp()">Tambah+</button>
-                                                </div>
-                                            </div>
-                                            <div class="row mt-3">
-                                                <div id ="tpekerjaan-container"></div>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-4">
-                                            <div class="row">
-                                                <div class="col-md-6 col-12">
-                                                    <h5 class="fw-bold">Tenaga Kerja</h5>
-                                                </div>
-                                                <div class="col-md-6 col-12">
-                                                    <button type="button" class="btn btn-primary float-end"
-                                                        onclick="addtk()">Tambah
-                                                        +</button>
-                                                </div>
-                                            </div>
-                                            <div class="row mt-3">
-                                                <div id ="tkerja-container"></div>
-                                            </div>
-                                        </div>
+
                                         <div class="col-md-5">
                                             <div class="row">
                                                 <div class="col-md-7 col-12">
@@ -94,9 +52,6 @@
                                                 <div id ="akerja-container"></div>
                                             </div>
                                         </div>
-                                    </div>
-                                    <hr class="mt-3 mb-3">
-                                    <div class="row">
                                         <div class="col-md-5">
                                             <div class="row">
                                                 <div class="col-md-7 col-12">
@@ -111,20 +66,11 @@
                                                 <div id ="mkerja-container"></div>
                                             </div>
                                         </div>
-                                        <div class="col-md-4">
-                                            <div class="row">
-                                                <div class="col-md-7 col-12">
-                                                    <h5 class="fw-bold">Keterangan Tambahan</h5>
-                                                </div>
-                                                <div class="col-md-5 col-12">
-                                                    <button type="button" class="btn btn-primary float-end"
-                                                        onclick="addkt()">Tambah +</button>
-                                                </div>
-                                            </div>
-                                            <div class="row mt-3">
-                                                <div id ="ktambahan-container"></div>
-                                            </div>
-                                        </div>
+                                    </div>
+                                    <hr class="mt-3 mb-3">
+                                    <div class="row">
+
+
                                         <div class="col-md-3">
                                             <div class="row">
                                                 <div class="col-md-12 col-12">
@@ -133,8 +79,8 @@
                                             </div>
                                             <div class="mb-3">
                                                 <label for="" class="form-label">Pagi</label>
-                                                <select id="cuaca_pagi" name="cuaca_pagi"
-                                                    class="form-select select2-pagi" required>
+                                                <select id="cuaca_pagi" name="cuaca_pagi" class="form-select select2-pagi"
+                                                    required>
                                                     <option value=""></option>
                                                     <option value="1">Cerah</option>
                                                     <option value="2">Hujan</option>
@@ -153,8 +99,8 @@
                                             </div>
                                             <div class="mb-3">
                                                 <label for="" class="form-label">Sore</label>
-                                                <select id="cuaca_sore" name="cuaca_sore"
-                                                    class="form-select select2-sore" required>
+                                                <select id="cuaca_sore" name="cuaca_sore" class="form-select select2-sore"
+                                                    required>
                                                     <option value=""></option>
                                                     <option value="1">Cerah</option>
                                                     <option value="2">Hujan</option>
@@ -172,6 +118,15 @@
                                                 </select>
                                             </div>
                                         </div>
+                                        <div class="col-lg-8">
+                                            <div class="mb-3">
+                                                <label class="form-label">Uraian Pekerjaan / Rencana Kerja</label>
+
+                                                <div id="ic-editor"></div>
+                                                <input type="hidden" name="ic" id="ic">
+                                            </div>
+                                        </div>
+
                                     </div>
                                     <div class="row">
                                         <div class="col-lg-6">
@@ -182,12 +137,13 @@
                                                 <input type="hidden" name="keta" id="keta">
                                             </div>
                                         </div>
+
                                         <div class="col-lg-6">
                                             <div class="mb-3">
-                                                <label class="form-label">Instruksi / Catatan</label>
+                                                <label class="form-label">Kendala</label>
 
-                                                <div id="ic-editor"></div>
-                                                <input type="hidden" name="ic" id="ic">
+                                                <div id="kendala-editor"></div>
+                                                <input type="hidden" name="kendala" id="kendala">
                                             </div>
                                         </div>
                                     </div>
@@ -835,7 +791,24 @@
                 ]
             }
         });
-
+        const quillKendala = new Quill('#kendala-editor', {
+            theme: 'snow',
+            placeholder: 'Masukkan keterangan...',
+            modules: {
+                toolbar: [
+                    ['bold', 'italic', 'underline'],
+                    [{
+                        list: 'ordered'
+                    }, {
+                        list: 'bullet'
+                    }],
+                    [{
+                        align: []
+                    }],
+                    ['link', 'clean']
+                ]
+            }
+        });
         const quillInstruksi = new Quill('#ic-editor', {
             theme: 'snow',
             placeholder: 'Masukkan instruksi atau catatan...',
@@ -870,6 +843,7 @@
             // let keta = 'keta';
             // let ic = 'ic';
             formData.set('keta', quillKeterangan.root.innerHTML);
+            formData.set('kendala', quillKendala.root.innerHTML);
             formData.set('ic', quillInstruksi.root.innerHTML);
 
 
