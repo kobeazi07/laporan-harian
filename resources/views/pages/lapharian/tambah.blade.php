@@ -107,16 +107,7 @@
                                                     <option value="3">Gerimis</option>
                                                 </select>
                                             </div>
-                                            <div class="mb-3">
-                                                <label for="" class="form-label">Malam</label>
-                                                <select id="cuaca_malam" name="cuaca_malam"
-                                                    class="form-select select2-malam" required>
-                                                    <option value=""></option>
-                                                    <option value="1">Cerah</option>
-                                                    <option value="2">Hujan</option>
-                                                    <option value="3">Gerimis</option>
-                                                </select>
-                                            </div>
+
                                         </div>
                                         <div class="col-lg-8">
                                             <div class="mb-3">

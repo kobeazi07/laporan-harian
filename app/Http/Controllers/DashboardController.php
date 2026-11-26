@@ -165,7 +165,51 @@ class DashboardController extends Controller
             'unit'
         ));
     }
+    public function haledit_lapharian($id)
+    {
+        $scope_work = ScopeWork::get();
+        $type_work = TypeWork::get();
+        $tenaga_kerja = TenagaKerja::get();
+        $alat = Alat::get();
+        $material = Material::get();
+        $unit = Unit::get();
 
+        $lap_harian = LapHarian::findOrFail($id);
+
+        $alat_input = AlatInput::where('lap_harian_id', $id)->get();
+        $material_input = MaterialInput::where('lap_harian_id', $id)->get();
+        $cuaca = Cuaca::where('lap_harian_id', $id)->first();
+        $project_id = $lap_harian->project_id;
+
+        return view('pages.lapharian.edit', compact(
+            'scope_work',
+            'type_work',
+            'tenaga_kerja',
+            'alat',
+            'material',
+            'material_input',
+            'cuaca',
+            'alat_input',
+            'lap_harian',
+            'project_id',
+            'unit'
+        ));
+    }
+    public function getDataEdit($id)
+    {
+        return response()->json([
+            'alat' => Alat::select('id', 'nama')->get(),
+            'material' => Material::select('id', 'nama')->get(),
+            'unit' => Unit::select('id', 'kode')->get(),
+            'alat_input' => AlatInput::where('lap_harian_id', $id)
+                ->select('id', 'alat_id', 'unit_id', 'jumlah')
+                ->get(),
+
+            'material_input' => MaterialInput::where('lap_harian_id', $id)
+                ->select('id', 'material_id', 'unit_id', 'jumlah')
+                ->get(),
+        ]);
+    }
     public function tambah_lapharian(Request $request)
     {
         // dd($request->all());
@@ -208,8 +252,7 @@ class DashboardController extends Controller
                 'lap_harian_id' =>  $lapharian_id,
                 'pagi' => $request->cuaca_pagi,
                 'siang' => $request->cuaca_siang,
-                'sore' => $request->cuaca_sore,
-                'malam' => $request->cuaca_malam
+                'sore' => $request->cuaca_sore
             ]);
             DB::commit();
 
@@ -407,10 +450,34 @@ class DashboardController extends Controller
             ], 500);
         }
     }
-    public function cetak_pdf()
+    public function cetak_pdf($id)
     {
-        $pdf = Pdf::loadView('pdf.laporan-harian-statis')
-            ->setPaper('a4', 'landscape');
+        $lap_harian = LapHarian::findOrFail($id);
+
+        $alat_input = AlatInput::with(['alat', 'unit'])
+            ->where('lap_harian_id', $id)
+            ->get();
+
+        $material_input = MaterialInput::with(['material', 'unit'])
+            ->where('lap_harian_id', $id)
+            ->get();
+
+        $cuaca = Cuaca::where('lap_harian_id', $id)->first();
+
+        // Minimal 10 baris atau mengikuti data terbanyak
+        $totalRows = max(
+            10,
+            $alat_input->count(),
+            $material_input->count()
+        );
+
+        $pdf = Pdf::loadView('pdf.laporan-harian-statis', compact(
+            'lap_harian',
+            'alat_input',
+            'material_input',
+            'cuaca',
+            'totalRows'
+        ))->setPaper('a4', 'landscape');
 
         return $pdf->stream('laporan-harian.pdf');
     }
@@ -420,5 +487,242 @@ class DashboardController extends Controller
         $lap_harian = LapHarian::with('project')->findOrFail($id);
 
         return view('pages.lapharian.actfoto', compact('lap_harian'));
+    }
+
+
+    // edit
+    public function Update_lapharian(Request $request, $id)
+    {
+        // dd($request->all());
+        $request->validate([
+            'nomor' => 'required|string|max:255',
+            'tanggal' => 'required|date',
+            'jumlah_man_power' => 'required|integer|min:0',
+
+            // ALAT
+            'ak_id' => 'nullable|array',
+            'ak_id.*' => 'nullable|integer',
+            'alat_id' => 'nullable|array',
+            'alat_id.*' => 'required|exists:alat,id',
+            'unit_id_alat' => 'nullable|array',
+            'unit_id_alat.*' => 'required|exists:unit,id',
+            'jumlah_alat' => 'nullable|array',
+            'jumlah_alat.*' => 'required|numeric|min:1',
+
+            // MATERIAL
+            'mk_id' => 'nullable|array',
+            'mk_id.*' => 'nullable|integer',
+            'material_id' => 'nullable|array',
+            'material_id.*' => 'required|exists:material,id',
+            'unit_id_material' => 'nullable|array',
+            'unit_id_material.*' => 'required|exists:unit,id',
+            'jumlah_material' => 'nullable|array',
+            'jumlah_material.*' => 'required|numeric|min:1',
+
+            // CUACA
+            'cuaca_pagi' => 'required|in:1,2,3',
+            'cuaca_siang' => 'required|in:1,2,3',
+            'cuaca_sore' => 'required|in:1,2,3',
+
+
+            // QUILL
+            'ic' => 'nullable|string',
+            'keta' => 'nullable|string',
+            'kendala' => 'nullable|string',
+        ]);
+
+        try {
+
+            DB::transaction(function () use ($request, $id) {
+
+                // =====================================
+                // 1. UPDATE LAPORAN UTAMA
+                // =====================================
+
+                $lap = LapHarian::findOrFail($id);
+
+                $lap->nomor = $request->nomor;
+                $lap->tanggal = $request->tanggal;
+                $lap->jumlah_man_power = $request->jumlah_man_power;
+
+                $lap->instruksi_catatan = $request->ic;
+                $lap->keterangan = $request->keta;
+                $lap->kendala = $request->kendala;
+
+                $lap->save();
+
+
+                // =====================================
+                // 2. PROSES ALAT (AK)
+                // =====================================
+
+                $akIds = $request->input('ak_id', []);
+                $alatIds = $request->input('alat_id', []);
+                $unitAlat = $request->input('unit_id_alat', []);
+                $jumlahAlat = $request->input('jumlah_alat', []);
+
+                $akTerpakai = [];
+
+                foreach ($alatIds as $index => $alatId) {
+
+                    $data = [
+                        'alat_id' => $alatId,
+                        'unit_id' => $unitAlat[$index],
+                        'jumlah' => $jumlahAlat[$index],
+                    ];
+
+                    $detailId = $akIds[$index] ?? null;
+
+                    if (!empty($detailId)) {
+
+                        // UPDATE DATA LAMA
+                        $this->updateAK($id, $detailId, $data);
+
+                        $akTerpakai[] = $detailId;
+                    } else {
+
+                        // CREATE DATA BARU
+                        $alatBaru = $this->addUpdateAK($id, $data);
+
+                        $akTerpakai[] = $alatBaru->id;
+                    }
+                }
+
+
+                // Hapus data Alat yang sudah dihapus dari form
+                AlatInput::where('lap_harian_id', $id)
+                    ->whereNotIn('id', $akTerpakai)
+                    ->delete();
+
+
+                // =====================================
+                // 3. PROSES MATERIAL (MK)
+                // =====================================
+
+                $mkIds = $request->input('mk_id', []);
+                $materialIds = $request->input('material_id', []);
+                $unitMaterial = $request->input('unit_id_material', []);
+                $jumlahMaterial = $request->input('jumlah_material', []);
+
+                $mkTerpakai = [];
+
+                foreach ($materialIds as $index => $materialId) {
+
+                    $data = [
+                        'material_id' => $materialId,
+                        'unit_id' => $unitMaterial[$index],
+                        'jumlah' => $jumlahMaterial[$index],
+                    ];
+
+                    $detailId = $mkIds[$index] ?? null;
+
+                    if (!empty($detailId)) {
+
+                        // UPDATE DATA LAMA
+                        $this->updateMK($id, $detailId, $data);
+
+                        $mkTerpakai[] = $detailId;
+                    } else {
+
+                        // CREATE DATA BARU
+                        $materialBaru = $this->addUpdateMK($id, $data);
+
+                        $mkTerpakai[] = $materialBaru->id;
+                    }
+                }
+
+
+                // Hapus data Material yang sudah dihapus dari form
+                MaterialInput::where('lap_harian_id', $id)
+                    ->whereNotIn('id', $mkTerpakai)
+                    ->delete();
+
+
+                // =====================================
+                // 4. UPDATE CUACA
+                // =====================================
+
+                Cuaca::updateOrCreate(
+                    ['lap_harian_id' => $id],
+                    [
+                        'pagi' => $request->cuaca_pagi,
+                        'siang' => $request->cuaca_siang,
+                        'sore' => $request->cuaca_sore
+
+
+                    ]
+                );
+            });
+
+            return response()->json([
+                'status' => 1,
+                'message' => 'Laporan harian berhasil diperbarui.',
+                'redirect' => url()->previous(),
+            ]);
+        } catch (\Throwable $e) {
+
+            return response()->json([
+                'status' => 0,
+                'message' => 'Gagal memperbarui laporan: ' . $e->getMessage(),
+            ], 500);
+        }
+    }
+
+
+    // =====================================
+    // FUNCTION UPDATE ALAT
+    // =====================================
+
+    private function updateAK($lapHarianId, $id, $data)
+    {
+        $alat = AlatInput::where('id', $id)
+            ->where('lap_harian_id', $lapHarianId)
+            ->firstOrFail();
+
+        $alat->update($data);
+
+        return $alat;
+    }
+
+
+    // =====================================
+    // FUNCTION CREATE ALAT
+    // =====================================
+
+    private function addUpdateAK($lapHarianId, $data)
+    {
+        return AlatInput::create(array_merge(
+            $data,
+            ['lap_harian_id' => $lapHarianId]
+        ));
+    }
+
+
+    // =====================================
+    // FUNCTION UPDATE MATERIAL
+    // =====================================
+
+    private function updateMK($lapHarianId, $id, $data)
+    {
+        $material = MaterialInput::where('id', $id)
+            ->where('lap_harian_id', $lapHarianId)
+            ->firstOrFail();
+
+        $material->update($data);
+
+        return $material;
+    }
+
+
+    // =====================================
+    // FUNCTION CREATE MATERIAL
+    // =====================================
+
+    private function addUpdateMK($lapHarianId, $data)
+    {
+        return MaterialInput::create(array_merge(
+            $data,
+            ['lap_harian_id' => $lapHarianId]
+        ));
     }
 }
