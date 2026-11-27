@@ -38,7 +38,7 @@
                                         <div class="mb-3">
                                             <label class="form-label">Nomor</label>
                                             <input type="text" name="nomor" id="nomor" class="form-control"
-                                                value="{{ old('nomor', $lap_harian->nomor) }}">
+                                                value="{{ old('nomor', $lap_harian->nomor) }}" disabled>
                                         </div>
                                     </div>
 
@@ -227,7 +227,11 @@
                                                 </option>
                                                 <option value="2" {{ $cuaca->pagi == 2 ? 'selected' : '' }}>Hujan
                                                 </option>
-                                                <option value="3" {{ $cuaca->pagi == 3 ? 'selected' : '' }}>Gerimis
+                                                <option value="3" {{ $cuaca->pagi == 3 ? 'selected' : '' }}>Mendung
+                                                </option>
+                                                <option value="4" {{ $cuaca->pagi == 4 ? 'selected' : '' }}>Gerimis
+                                                </option>
+                                                <option value="5" {{ $cuaca->pagi == 5 ? 'selected' : '' }}>Berawan
                                                 </option>
                                             </select>
                                         </div>
@@ -240,7 +244,11 @@
                                                 </option>
                                                 <option value="2" {{ $cuaca->siang == 2 ? 'selected' : '' }}>Hujan
                                                 </option>
-                                                <option value="3" {{ $cuaca->siang == 3 ? 'selected' : '' }}>Gerimis
+                                                <option value="3" {{ $cuaca->siang == 3 ? 'selected' : '' }}>Mendung
+                                                </option>
+                                                <option value="4" {{ $cuaca->siang == 4 ? 'selected' : '' }}>Gerimis
+                                                </option>
+                                                <option value="5" {{ $cuaca->siang == 5 ? 'selected' : '' }}>Berawan
                                                 </option>
                                             </select>
                                         </div>
@@ -253,7 +261,11 @@
                                                 </option>
                                                 <option value="2" {{ $cuaca->sore == 2 ? 'selected' : '' }}>Hujan
                                                 </option>
-                                                <option value="3" {{ $cuaca->sore == 3 ? 'selected' : '' }}>Gerimis
+                                                <option value="3" {{ $cuaca->sore == 3 ? 'selected' : '' }}>Mendung
+                                                </option>
+                                                <option value="4" {{ $cuaca->sore == 4 ? 'selected' : '' }}>Gerimis
+                                                </option>
+                                                <option value="5" {{ $cuaca->sore == 5 ? 'selected' : '' }}>Berawan
                                                 </option>
                                             </select>
                                         </div>
@@ -612,9 +624,9 @@
             // SELECT2 CUACA
             // --------------------------------------
             $('#formlapharian .select2-pagi, \
-                                                                                                           #formlapharian .select2-siang, \
-                                                                                                           #formlapharian .select2-sore, \
-                                                                                                           #formlapharian .select2-malam')
+                                                                                                                               #formlapharian .select2-siang, \
+                                                                                                                               #formlapharian .select2-sore, \
+                                                                                                                               #formlapharian .select2-malam')
                 .select2({
                     width: '100%',
                     placeholder: 'Pilih atau cari data...',

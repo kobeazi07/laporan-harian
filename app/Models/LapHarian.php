@@ -55,6 +55,11 @@ class LapHarian extends Model
         return $this->belongsTo(User::class, 'approved_by');
     }
 
+    // public function pr(): BelongsTo
+    // {
+    //     return $this->belongsTo(User::class, 'approved_by');
+    // }
+
     // public function konsultanPengawas(): BelongsTo
     // {
     //     return $this->belongsTo(KonsultanPengawas::class, 'konsultan_pengawas_id');

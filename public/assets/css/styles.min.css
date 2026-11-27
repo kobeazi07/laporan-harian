@@ -301,7 +301,7 @@
 /* HP Portrait */
 @media only screen and (max-width: 767px) and (orientation: portrait) {
     .form-input {
-        margin-top: 10px !important;
+        margin-top: -1  10px !important;
     }
 }
 .blog-img {

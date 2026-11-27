@@ -21,6 +21,7 @@ use App\Models\TenagaKerjaInput;
 use App\Models\TworkInput;
 use App\Models\Unit;
 use App\Models\Dokumentasi;
+use App\Models\Prefix;
 use Intervention\Image\ImageManager;
 use Intervention\Image\Drivers\Gd\Driver;
 use Intervention\Image\Encoders\WebpEncoder;
@@ -36,10 +37,151 @@ use Barryvdh\DomPDF\Facade\Pdf;
 
 class DashboardController extends Controller
 {
+
+
     public function dashboard()
     {
-        return view('pages.dashboard');
+        // Statistik laporan
+        $totalLaporan = LapHarian::count();
+
+        $laporanDraft = LapHarian::where('status', 1)->count();
+
+        $laporanFoto = LapHarian::where('status', 2)->count();
+
+        $totalManpower = LapHarian::sum('jumlah_man_power');
+
+        // Grafik laporan per bulan pada tahun berjalan
+        $dataBulanan = LapHarian::selectRaw('MONTH(tanggal) as bulan, COUNT(*) as total')
+            ->whereYear('tanggal', now()->year)
+            ->groupByRaw('MONTH(tanggal)')
+            ->pluck('total', 'bulan');
+
+        $bulan = [
+            'Jan',
+            'Feb',
+            'Mar',
+            'Apr',
+            'Mei',
+            'Jun',
+            'Jul',
+            'Agu',
+            'Sep',
+            'Okt',
+            'Nov',
+            'Des'
+        ];
+
+        $grafikLaporan = [];
+
+        for ($i = 1; $i <= 12; $i++) {
+            $grafikLaporan[] = $dataBulanan[$i] ?? 0;
+        }
+
+        // Laporan terbaru
+        $laporanTerbaru = LapHarian::with('pembuat')
+            ->latest('tanggal')
+            ->take(5)
+            ->get();
+
+
+        $totalCuacaHujan = Cuaca::where('pagi', 2)
+            ->orWhere('siang', 2)
+            ->orWhere('sore', 2)
+            ->count();
+
+        return view('pages.dashboard', compact(
+            'totalLaporan',
+            'laporanDraft',
+            'laporanFoto',
+            'totalManpower',
+            'bulan',
+            'grafikLaporan',
+            'totalCuacaHujan',
+            'laporanTerbaru'
+        ));
     }
+
+    // loginlogout
+    public function halamanlogin()
+    {
+
+        return view('layouts.login');
+    }
+    // public function login(Request $request)
+    // {
+    //     // dd($request->all());
+    //     $request->validate([
+    //         'email' => 'required|email',
+    //         'password' => 'required|min:6',
+    //     ], [
+    //         'email.required' => 'Email wajib diisi',
+    //         'email.email' => 'Format email tidak valid',
+    //         'password.required' => 'Password wajib diisi',
+    //         'password.min' => 'Password minimal 6 karakter',
+    //     ]);
+    //     $credentials = $request->only('email', 'password');
+    //     $remember = $request->has('remember');
+    //     if (Auth::attempt($credentials, $remember)) {
+    //         $request->session()->regenerate();
+    //         return response()->json([
+    //             'success' => true,
+    //             'message' => 'Login berhasil',
+    //             'redirect' => url('/dashboard') // sesuaikan route tujuan
+    //         ]);
+    //     }
+    //     // Password salah
+    //     return response()->json([
+    //         'success' => false,
+    //         'message' => 'Password salah! Silakan coba lagi.'
+    //     ], 401);
+    // }
+
+    public function login(Request $request)
+    {
+        $request->validate([
+            'email' => 'required|email',
+            'password' => 'required|min:6',
+        ], [
+            'email.required' => 'Email wajib diisi',
+            'email.email' => 'Format email tidak valid',
+            'password.required' => 'Password wajib diisi',
+            'password.min' => 'Password minimal 6 karakter',
+        ]);
+
+        $credentials = $request->only('email', 'password');
+        $remember = $request->has('remember');
+
+        if (Auth::attempt($credentials, $remember)) {
+            $request->session()->regenerate();
+
+            $user = Auth::user();
+
+            // Redirect berdasarkan role
+            $redirect = $user->role == 'Admin'
+                ? url('/dashboard')
+                : url('/admin_lapharian/1');
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Login berhasil',
+                'redirect' => $redirect
+            ]);
+        }
+
+        return response()->json([
+            'success' => false,
+            'message' => 'Email atau password salah! Silakan coba lagi.'
+        ], 401);
+    }
+    public function user_logout(Request $request)
+    {
+
+        Auth::logout();
+        request()->session()->invalidate();
+        request()->session()->regenerateToken();
+        return redirect('/');
+    }
+    // akhir login logout
     // project
 
     public function admin_project()
@@ -69,16 +211,23 @@ class DashboardController extends Controller
         DB::beginTransaction();
 
         try {
-
+            $prefix = Prefix::where('type', 1)->lockForUpdate()->first();
+            if (!$prefix) {
+                return response()->json([
+                    'status' => 0,
+                    'message' => 'Prefix untuk Internal Delivery tidak ditemukan'
+                ], 500);
+            }
+            $kode_project = $prefix->prefix . str_pad($prefix->next_number, 3, '0', STR_PAD_LEFT);
             // dd($request->all());    
             $project = Project::create([
-                'kode_project' => $request->kode_project,
+                'kode_project' => $kode_project,
                 'nama_project' => $request->nama_project,
                 'konsultan_pengawas_id' => $request->konsultan_pengawas_id,
                 'owner_id' => $request->owner_id,
                 'kontraktor_pelaksana_id' => $request->kontraktor_pelaksana_id,
             ]);
-
+            $prefix->increment('next_number');
             DB::commit();
             return response()->json([
                 'status' => 1,
@@ -99,7 +248,7 @@ class DashboardController extends Controller
 
         $partner = Project::find($id);
         $data = [
-            'kode_project' => $request->kode_project,
+
             'nama_project' => $request->nama_project,
             'konsultan_pengawas_id' => $request->konsultan_pengawas_id,
             'owner_id' => $request->owner_id,
@@ -217,9 +366,17 @@ class DashboardController extends Controller
 
         try {
             // dd($request->all());
+            $prefix = Prefix::where('type', 2)->lockForUpdate()->first();
+            if (!$prefix) {
+                return response()->json([
+                    'status' => 0,
+                    'message' => 'Prefix untuk Internal Delivery tidak ditemukan'
+                ], 500);
+            }
+            $kode_lap_harian = $prefix->prefix . str_pad($prefix->next_number, 3, '0', STR_PAD_LEFT);
             $lapharian = LapHarian::create([
                 'project_id' => $request->project_id,
-                'nomor' => $request->nomor,
+                'nomor' => $kode_lap_harian,
                 'tanggal' => $request->tanggal,
                 'jumlah_man_power' => $request->jumlah_man_power,
                 'kendala' => $request->kendala,
@@ -227,6 +384,7 @@ class DashboardController extends Controller
                 'keterangan' => $request->input('keta'),
                 'instruksi_catatan' => $request->input('ic'),
                 'status' => 1,
+                'created_by' => Auth::id(),
             ]);
             $lapharian_id =  $lapharian->id;
             // sow
@@ -247,7 +405,7 @@ class DashboardController extends Controller
                     'jumlah'     => $request->jumlah_material[$key]
                 ]);
             }
-
+            $prefix->increment('next_number');
             Cuaca::create([
                 'lap_harian_id' =>  $lapharian_id,
                 'pagi' => $request->cuaca_pagi,
@@ -285,6 +443,7 @@ class DashboardController extends Controller
     // upload foto
     public function upload_foto(Request $request)
     {
+        // dd($request->all());
         $validator = Validator::make($request->all(), [
             'lap_harian_id' => 'required|exists:lap_harian,id',
             'foto'          => 'required|image|mimes:jpg,jpeg,png,webp|max:10240',
@@ -352,6 +511,10 @@ class DashboardController extends Controller
                 'foto'          => $thumbnailPath,
             ]);
 
+            $lapharian = LapHarian::where('id', $request->lap_harian_id)->update([
+                'status' => 2
+            ]);
+
             return response()->json([
                 'success' => true,
                 'message' => 'Foto dokumentasi berhasil diunggah.',
@@ -413,13 +576,9 @@ class DashboardController extends Controller
                 }
 
                 // Hapus data relasi
-                $lapharian->keteranganOptional()->delete();
-                $lapharian->tenagaKerjaInputs()->delete();
                 $lapharian->alatInputs()->delete();
                 $lapharian->materialInputs()->delete();
                 $lapharian->cuaca()->delete();
-                $lapharian->sow_inputs()->delete();
-                $lapharian->twork_inputs()->delete();
 
                 // Hapus marker dan dokumentasi
                 $lapharian->dokumentasi()->get()->each(function ($item) {
@@ -471,12 +630,17 @@ class DashboardController extends Controller
             $material_input->count()
         );
 
+        $dokumentasi = Dokumentasi::where('lap_harian_id', $id)->get();
+
+        $fotoPerHalaman = $dokumentasi->chunk(2);
+
         $pdf = Pdf::loadView('pdf.laporan-harian-statis', compact(
             'lap_harian',
             'alat_input',
             'material_input',
             'cuaca',
-            'totalRows'
+            'totalRows',
+            'fotoPerHalaman'
         ))->setPaper('a4', 'landscape');
 
         return $pdf->stream('laporan-harian.pdf');
@@ -495,7 +659,7 @@ class DashboardController extends Controller
     {
         // dd($request->all());
         $request->validate([
-            'nomor' => 'required|string|max:255',
+
             'tanggal' => 'required|date',
             'jumlah_man_power' => 'required|integer|min:0',
 
@@ -541,7 +705,7 @@ class DashboardController extends Controller
 
                 $lap = LapHarian::findOrFail($id);
 
-                $lap->nomor = $request->nomor;
+
                 $lap->tanggal = $request->tanggal;
                 $lap->jumlah_man_power = $request->jumlah_man_power;
 

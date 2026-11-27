@@ -215,12 +215,12 @@
         </table>
 
         <!-- TANGGAL TANDA TANGAN -->
-        <div class="location-date">
+        {{-- <div class="location-date">
             Sanggau, 19 November 2026
-        </div>
+        </div> --}}
 
         <!-- TANDA TANGAN -->
-        <table class="signature">
+        <table class="signature" style="margin-top: 50px;">
             <tr>
                 <td>
                     Diketahui Oleh
@@ -258,7 +258,10 @@
         </table>
 
     </div>
+    {{-- penutup halaman pertama --}}
 
+    {{-- HALAMAN DOKUMENTASI: HALAMAN 2 DAN SETERUSNYA --}}
+    @include('pdf.includes.hal2')
 </body>
 
 </html>

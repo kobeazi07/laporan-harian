@@ -35,11 +35,7 @@
                                      @csrf
 
                                      <!-- Kode Project -->
-                                     <div class="form-group mb-3">
-                                         <label for="kode">Kode Project</label>
-                                         <input type="text" class="form-control" name="kode_project" id="kode_project"
-                                             placeholder="Masukkan kode project" required>
-                                     </div>
+
 
                                      <!-- Nama Project -->
                                      <div class="form-group mb-3">
@@ -176,7 +172,7 @@
                                                                          Project</label>
                                                                      <input type="text" class="form-control"
                                                                          name="kode_project" id="exampleFormControlInput1"
-                                                                         value="{{ $project->kode_project }}">
+                                                                         value="{{ $project->kode_project }}" disabled>
                                                                  </div>
 
                                                                  <div class="form-group">

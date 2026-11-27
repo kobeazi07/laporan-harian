@@ -1,28 +1,35 @@
 @extends('layouts.index')
 
 @section('konten')
-    <div class="row form-input" style="">
+    <div class="row form-input">
         <div class="body-wrapper-inner">
             <div class="">
                 <div class="">
                     <div class="card-body">
-                        <h5 class="card-title fw-semibold mb-4">Tambah Laporan Harian</h5>
+                        <div class="row align-items-center mb-4">
+                            <div class="col">
+                                <a href="{{ route('HalamanAdminlapharian', $project_id) }}" class="btn btn-secondary">
+                                    <i class="bi bi-arrow-left"></i>
+                                    Kembali
+                                </a>
+                            </div>
+                            <div class="col-auto">
+                                <h5 class="card-title fw-semibold mb-0">
+                                    Tambah Laporan Harian
+                                </h5>
+                            </div>
+
+
+                        </div>
                         <div class="card">
                             <div class="card-body">
                                 <form class="formlapharian" id="formlapharian">
                                     @csrf
                                     <div class="row">
-                                        <div class="col-md-3">
-                                            <div class="mb-3">
-                                                <label for="" class="form-label">Nomor</label>
-                                                <input type="text" name="nomor" id="nomor" class="form-control">
-                                                <input type="hidden" name="project_id" value="{{ $project_id }}"
-                                                    id="nomor" class="form-control">
-                                            </div>
 
-
-                                        </div>
                                         <div class="col-md-3">
+                                            <input type="hidden" name="project_id" value="{{ $project_id }}"
+                                                id="nomor" class="form-control">
                                             <div class="mb-3">
                                                 <label for="" class="form-label">Tanggal</label>
                                                 <input type="date" class="form-control" id="date" name="tanggal">
@@ -84,7 +91,10 @@
                                                     <option value=""></option>
                                                     <option value="1">Cerah</option>
                                                     <option value="2">Hujan</option>
-                                                    <option value="3">Gerimis</option>
+                                                    <option value="3">Mendung</option>
+                                                    <option value="4">Gerimis</option>
+                                                    <option value="5">Berawan</option>
+
                                                 </select>
                                             </div>
                                             <div class="mb-3">
@@ -94,7 +104,9 @@
                                                     <option value=""></option>
                                                     <option value="1">Cerah</option>
                                                     <option value="2">Hujan</option>
-                                                    <option value="3">Gerimis</option>
+                                                    <option value="3">Mendung</option>
+                                                    <option value="4">Gerimis</option>
+                                                    <option value="5">Berawan</option>
                                                 </select>
                                             </div>
                                             <div class="mb-3">
@@ -104,7 +116,9 @@
                                                     <option value=""></option>
                                                     <option value="1">Cerah</option>
                                                     <option value="2">Hujan</option>
-                                                    <option value="3">Gerimis</option>
+                                                    <option value="3">Mendung</option>
+                                                    <option value="4">Gerimis</option>
+                                                    <option value="5">Berawan</option>
                                                 </select>
                                             </div>
 

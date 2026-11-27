@@ -10,7 +10,7 @@
              <div class="card-header py-3">
                  <div class="row">
                      <div class="col-lg-6 col-6">
-                         <h6 class="m-0 font-weight-bold text-primary">Data lapharian</h6>
+                         <h6 class="m-0 font-weight-bold text-primary">Data laporan Harian</h6>
                      </div>
                      <div class="col-lg-6 col-6">
                          <a href="{{ route('HalamanTambahlapharian', $project->id) }}" class="btn btn-primary float-end">
@@ -31,10 +31,12 @@
                          <thead>
                              <tr>
                                  <th>No</th>
-                                 <th>Nomor</th>
-                                 <th>Judul laporan</th>
-                                 <th>Petugas Laporan</th>
                                  <th>Tanggal</th>
+                                 <th>Nomor</th>
+
+                                 <th>Petugas Laporan</th>
+
+                                 <th>Status</th>
                                  <th>Aksi</th>
 
                              </tr>
@@ -44,10 +46,20 @@
                              @foreach ($lapharian as $key => $lapharian)
                                  <tr>
                                      <td>{{ $key + 1 }}</td>
-                                     <td>{{ $lapharian->nomor }}</td>
-                                     <td>{{ $lapharian->judul }}</td>
-                                     <td>{{ $lapharian->created_by }}</td>
                                      <td>{{ $lapharian->tanggal }}</td>
+                                     <td>{{ $lapharian->nomor }}</td>
+                                     <td>{{ $lapharian->pembuat->name }}</td>
+                                     <td>
+                                         @if ($lapharian->status == 1)
+                                             <span class="badge bg-warning text-dark">Draft</span>
+                                         @elseif ($lapharian->status == 2)
+                                             <span class="badge bg-success">Already Photo</span>
+                                         @else
+                                             <span class="badge bg-secondary">Unknown</span>
+                                         @endif
+                                     </td>
+
+
                                      <td>
                                          <div class="d-flex align-items-center gap-2">
                                              <a href="{{ route('HalamanEditlapharian', $lapharian->id) }}" type="button"
@@ -85,19 +97,24 @@
                                              <!-- Modal -->
 
                                              {{-- akhir modal edit --}}
+                                             {{-- hapus --}}
+                                             @if (auth()->user()->role == 'Admin' || $lapharian->status == 1)
+                                                 <form action="{{ route('lapharian.destroy', $lapharian->id) }}"
+                                                     method="POST" class="form-delete-lapharian">
+                                                     @csrf
+                                                     @method('DELETE')
+                                                     <button type="submit" class="btn btn-danger btn-submit-delete">
+                                                         <svg xmlns="http://www.w3.org/2000/svg" width="16"
+                                                             height="16" fill="currentColor" class="bi bi-trash-fill"
+                                                             viewBox="0 0 16 16">
+                                                             <path
+                                                                 d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1zm3 4a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5M8 5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7A.5.5 0 0 1 8 5m3 .5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 1 0" />
+                                                         </svg>
+                                                     </button>
+                                                 </form>
+                                             @endif
+                                             {{-- akhir hapus --}}
 
-                                             <form action="{{ route('lapharian.destroy', $lapharian->id) }}" method="POST"
-                                                 class="form-delete-lapharian">
-                                                 @csrf
-                                                 @method('DELETE')
-                                                 <button type="submit" class="btn btn-danger btn-submit-delete">
-                                                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
-                                                         fill="currentColor" class="bi bi-trash-fill" viewBox="0 0 16 16">
-                                                         <path
-                                                             d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1zm3 4a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5M8 5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7A.5.5 0 0 1 8 5m3 .5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 1 0" />
-                                                     </svg>
-                                                 </button>
-                                             </form>
                                          </div>
                                      </td>
                                  </tr>

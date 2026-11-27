@@ -256,4 +256,31 @@
              break-after: avoid;
          }
      }
+
+     .documentation-page {
+         page-break-before: always;
+     }
+
+     .documentation-table {
+         width: 100%;
+         border-collapse: collapse;
+         margin-top: 15px;
+     }
+
+     .documentation-table tr {
+         page-break-inside: avoid;
+     }
+
+     .documentation-table td {
+         width: 100%;
+         text-align: center;
+         padding: 8px;
+         border: none;
+     }
+
+     .documentation-image {
+         width: 100%;
+         height: 430px;
+         object-fit: contain;
+     }
  </style>

@@ -7,13 +7,26 @@
     <div class="body-wrapper-inner kamera-page ">
 
         <div class="">
+            <div class="kamera-header row align-items-center mb-4">
+                <div class="col">
+                    <a href="{{ route('HalamanAdminlapharian', $lap_harian->project_id) }}" class="btn btn-secondary">
+                        <i class="bi bi-arrow-left"></i>
+                        Kembali
+                    </a>
+                </div>
+                <div class="col-auto text-end">
+                    <h4>Dokumentasi Lapangan</h4>
+                    <p>
+                        Ambil foto dengan informasi lokasi dan waktu otomatis.
+                    </p>
+                </div>
+
+
+            </div>
 
             {{-- HEADER --}}
             <div class="kamera-header">
-                <h4>Dokumentasi Lapangan</h4>
-                <p>
-                    Ambil foto dengan informasi lokasi dan waktu otomatis.
-                </p>
+
             </div>
 
 
